@@ -7,26 +7,51 @@ import cv2
 import numpy as np
 import logging
 from io import BytesIO
+import config
 
 # take imgs
 def shot_cv2():
-  
+  # set image storage path
+  img_path = config.IMG_PATH
+
+  #capture image by cv2
+  cam = cv2.VideoCapture(0)
+
+  img_counter = 0
+  while True:
+    ret, frame = cam.read()
+    if not ret:
+      print("ERROR: Fail to grab frame.")
+      break
+    cv2.imshow("image capture", frame)
+
+    key = cv2.waitKey(1)
+    if key%256 == 27:
+      # ESC
+      print("ESC hit, closing...")
+      break
+    elif key%256 == 32:
+      # SPACE
+      img_name = "cv2_shot_{}.jpg".format(img_counter)
+      cv2.imwrite( img_path + img_name, frame )
+      print("{} written...".format( img_name ))
+      img_counter += 1
 
 # OCR
-def ocr():
+# def ocr():
 
-# text sort out
-def sort_text():
+# # text sort out
+# def sort_text():
 
 
-# database
-def connect_to_db():
+# # database
+# def connect_to_db():
 
 
 if __name__ == '__main__':
 
   try:
     shot_cv2()
-    ocr()
+    # ocr()
   except:
     logging.exception("Message")

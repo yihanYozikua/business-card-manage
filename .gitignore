@@ -1,2 +1,4 @@
 /venv/
 config.py
+/img/
+/__pycache__/
