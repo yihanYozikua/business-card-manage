@@ -7,6 +7,8 @@ import cv2
 import numpy as np
 import logging
 from io import BytesIO
+import pytesseract
+from PIL import Image
 import config
 
 # take imgs
@@ -38,7 +40,10 @@ def shot_cv2():
       img_counter += 1
 
 # OCR
-# def ocr():
+def ocr():
+  image = Image.open('/Users/xiaoyihan/Downloads/IMG_8024.JPG')
+  text = pytesseract.image_to_string(image, lang='chi_tra')
+  print(text)
 
 # # text sort out
 # def sort_text():
@@ -51,7 +56,7 @@ def shot_cv2():
 if __name__ == '__main__':
 
   try:
-    shot_cv2()
-    # ocr()
+    # shot_cv2()
+    ocr()
   except:
     logging.exception("Message")
