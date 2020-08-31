@@ -13,7 +13,7 @@ import threading
 import time
 import config
 
-# Print iterations progress
+############## Print iterations progress ##############
 def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
     """
     Call in a loop to create terminal progress bar
@@ -35,7 +35,7 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     if iteration == total: 
         print()
 
-############## timing ############## child thread
+############## Countdown ##############
 def countdown_time():
   items = list(range(0, 80))
   l = len(items)
@@ -45,10 +45,10 @@ def countdown_time():
     time.sleep(0.1)
     printProgressBar(i + 1, l, prefix = 'Progress: ', suffix = 'Complete', length = 50)
 
-############## take imgs ##############
+############## Take Imgs ##############
 def shot_cv2():
   # set image storage path
-  img_path = config.IMG_PATH
+  img_path = config.IMG_STORAGE_PATH
 
   #capture image by cv2
   cam = cv2.VideoCapture(0)
@@ -75,27 +75,31 @@ def shot_cv2():
 
 ############## OCR ##############
 def ocr():
-  image = Image.open('/Users/xiaoyihan/Downloads/IMG_7520.JPG')
+  image = Image.open('/Users/xiaoyihan/Downloads/IMG_8026.JPG')
   text = pytesseract.image_to_string(image, lang='chi_tra+eng')
   return text
 
-############## text sort out ##############
+############## Text Sort Out ##############
 # def sort_text():
 
 
-############## database ##############
+############## Database ##############
 # def connect_to_db():
+
+
+############## Sign Up / In ##############
+# def authentication():
 
 
 if __name__ == '__main__':
 
   try:
     # shot_cv2()
-    t = threading.Thread(target = countdown_time) # make count_time() as a child thread function run at background
-    t.start() # execute the child thread
+    ct_countdown = threading.Thread(target = countdown_time) # make count_time() as a child thread function run at background
+    ct_countdown.start() # execute the child thread
     result = ocr() # execute the countdown thread
 
-    t.join() # wait until the child thread work end
+    ct_countdown.join() # wait until the child thread work end
     print(result)
     print("DONE.")
   except:
