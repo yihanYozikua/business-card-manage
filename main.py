@@ -9,9 +9,12 @@ import logging
 from io import BytesIO
 import pytesseract
 from PIL import Image
+import threading
+import time
 import config
 
-# take imgs
+
+############## take imgs ##############
 def shot_cv2():
   # set image storage path
   img_path = config.IMG_PATH
@@ -21,8 +24,8 @@ def shot_cv2():
 
   img_counter = 0
   while True:
-    ret, frame = cam.read()
-    if not ret:
+    frame = cam.read()
+    if not frame:
       print("ERROR: Fail to grab frame.")
       break
     cv2.imshow("image capture", frame)
@@ -39,17 +42,17 @@ def shot_cv2():
       print("{} written...".format( img_name ))
       img_counter += 1
 
-# OCR
+############## OCR ##############
 def ocr():
-  image = Image.open('/Users/xiaoyihan/Downloads/IMG_8024.JPG')
-  text = pytesseract.image_to_string(image, lang='chi_tra')
-  print(text)
+  image = Image.open('/Users/xiaoyihan/Downloads/IMG_7520.JPG')
+  text = pytesseract.image_to_string(image, lang='chi_tra+eng')
+  return text
 
-# # text sort out
+############## text sort out ##############
 # def sort_text():
 
 
-# # database
+############## database ##############
 # def connect_to_db():
 
 
@@ -57,6 +60,10 @@ if __name__ == '__main__':
 
   try:
     # shot_cv2()
-    ocr()
+    
+    result = ocr() # execute the countdown thread
+    print(result)
+    
+    print("DONE.")
   except:
     logging.exception("Message")
