@@ -13,6 +13,37 @@ import threading
 import time
 import config
 
+# Print iterations progress
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+    """
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+        printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    bar = fill * filledLength + '-' * (length - filledLength)
+    print(f'\r{prefix} |{bar}| {percent}% {suffix}', end = printEnd)
+    # Print New Line on Complete
+    if iteration == total: 
+        print()
+
+############## timing ############## child thread
+def countdown_time():
+  items = list(range(0, 80))
+  l = len(items)
+
+  printProgressBar(0, l, prefix = 'Progress: ', suffix = 'Complete', length = 50)
+  for i, item in enumerate(items):
+    time.sleep(0.1)
+    printProgressBar(i + 1, l, prefix = 'Progress: ', suffix = 'Complete', length = 50)
 
 ############## take imgs ##############
 def shot_cv2():
@@ -60,10 +91,12 @@ if __name__ == '__main__':
 
   try:
     # shot_cv2()
-    
+    t = threading.Thread(target = countdown_time) # make count_time() as a child thread function run at background
+    t.start() # execute the child thread
     result = ocr() # execute the countdown thread
+
+    t.join() # wait until the child thread work end
     print(result)
-    
     print("DONE.")
   except:
     logging.exception("Message")
