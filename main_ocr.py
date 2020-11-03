@@ -152,10 +152,10 @@ def tesseract_remote( img_url ):
   img = Image.open( io.BytesIO( response.content ) )
   text = pytesseract.image_to_string( img, lang='chi_tra+eng' )
   print( "=== Tesseract Result ===" )
-  # log_file.write( "\t" + "=== Tesseract Result ===\n" )
+  log_file.write( "\t" + "=== Tesseract Result ===\n" )
 
   print( text )
-  # log_file.write( "\t" + "\t" + text + "\n" )
+  log_file.write( "\t" + "\t" + text + "\n" )
   return text
 
 ### Azure OCR Remote
@@ -174,13 +174,13 @@ def azure_ocr_remote( img_url ):
     j = 0
 
     print( "=== Azure Reslut ===" )
-    # log_file.write( "\t" + "=== Azure Reslut ===\n" )
+    log_file.write( "\t" + "=== Azure Reslut ===\n" )
 
     if ( analysis["orientation"] != "NotDetected" ):
       while i < len( analysis["regions"][0]["lines"] ):
         while j < len( analysis["regions"][0]["lines"][i]["words"] ):
           print( analysis["regions"][0]["lines"][i]["words"][j]["text"] )
-          # log_file.write( "\t" + "\t" + str(analysis["regions"][0]["lines"][i]["words"][j]["text"]) + "\n" )
+          log_file.write( "\t" + "\t" + str(analysis["regions"][0]["lines"][i]["words"][j]["text"]) + "\n" )
           j+=1
         i+=1
       print()
@@ -213,7 +213,7 @@ def blob_list_analysis( container_name ):
   blob_list = container_client.list_blobs()
   for blob in blob_list:
     print( "\t" + blob.name + " analyzing..........." )
-    # log_file.write( blob.name + " analyzing...........\n" )
+    log_file.write( blob.name + " analyzing...........\n" )
 
     blob_client = BlobClient.from_connection_string( connect_str, container_name=container_name, blob_name=blob.name )
     # print( blob_client.url )
@@ -250,11 +250,11 @@ def blob_upload_img( container_name_input ):
 if __name__ == '__main__':
 
   try:
-    # log_file = open( config.LOG_DIR + "result.txt", "w")
+    log_file = open( config.LOG_DIR + "result.txt", "w")
 
     ### Upload blobs to Containers
     # blob_name = "20201103-test" + str( uuid.uuid4() )
-    # blob_name = "20201103-test"
+    blob_name = "20201103-test"
     # t = threading.Thread( target = blob_upload_img( blob_name ) )
     # t.start()
     # t.join()
@@ -273,24 +273,25 @@ if __name__ == '__main__':
     contrast_clip_limit = 0.5
     tileGridSize = 20
 
+    '''
     ### Preprocess the raw images to metadata
     for i in range(1,61):
       print('./img/{}.png'.format(i))
-      src = cv2.imread('./img/{}.png'.format(i))
-      img = cv2.resize(src,None,fx=0.8,fy=0.8,
-                   interpolation=cv2.INTER_CUBIC)
+      src = cv2.imread('./img/{}.*'.format(i))
+      img = cv2.resize(src,None,fx=0.8,fy=0.8, interpolation=cv2.INTER_CUBIC)
       img = contrast(img)
       img = shift_filter(img)
       result = draw_counter(img)
       cv2.imwrite('./processed/{}{}.png'.format(i,filename_addition), result)
+    '''
 
     ### Analyze
     print( "blob name: " + blob_name )
     blob_list_analysis( "20201103-test" )
 
     print("\n======================= DONE. =======================")
-    # log_file.write( "\n======================= DONE. =======================" )
-    # log_file.close()
+    log_file.write( "\n======================= DONE. =======================" )
+    log_file.close()
     cv2.destroyAllWindows()
 
   except:
