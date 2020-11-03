@@ -23,7 +23,7 @@ import config
 ### Function to write json files
 def write_JSON( words , fname ): # words: result to be written; fname: name of the .json file
     JSON_dir = config.JSON_DIR
-    with open( JSON_dir + fname + '.json', 'w', encoding='utf-8') as f:
+    with open( JSON_dir + fname + str( uuid.uuid4()) + '.json', 'w', encoding='utf-8') as f:
         json.dump( words, f, ensure_ascii=False, indent=4 )
 
 ### Print iterations progress
@@ -70,75 +70,6 @@ def adj_img( img_name ):
   cv2.imwrite( config.IMG_PATH + 'img_bin2.jpg', img_bin )
   cv2.waitKey(0)
   return
-
-### 雙邊濾波 
-def bi_filter(image): #雙邊濾波
-    dst = cv2.bilateralFilter(image, 0, 100, 5)
-    return dst
-
-### 均值遷移 
-def shift_filter(image): #均值遷移
-    dst = cv2.pyrMeanShiftFiltering(image, 10, 50)
-    return dst
-
-
-def draw_counter(image):
-    edged = image.astype(np.uint8)
-    gray = cv2.cvtColor(edged, cv2.COLOR_BGR2GRAY) 
-    edged = cv2.Canny(gray, coutour_thLOW, countour_thHIGH) 
-    contours, hierarchy = cv2.findContours(edged, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    #print("Number of Contours found = " + str(len(contours))) 
-    cv2.drawContours(image, contours, -1, (255, 255, 255), countour_size) 
-    return image
-
-
-def hist_peak(image):
-    hist = cv2.calcHist([image], [0], None, [256], [0,256])
-    #plt.plot(hist)
-    #plt.show()
-    peaks = []
-    for i in range(2,253):
-        if hist[i] > hist[i-1] and hist[i] > hist[i+1] and hist[i] > hist[i-2] and hist[i] > hist[i+2]:
-            if hist[i] > 1000:
-                #print("at {}, value: {}".format(i, hist[i]))
-                peaks.append(i)
-    peak = int(sum(peaks, 0) / len(peaks))
-    print("peak is {}, value: {}".format(peak, hist[peak]))
-    return peak
-
-    #cv2.imshow("hist",hist)
-    #cv2.waitKey(0)
-    #plt.hist(img.ravel(),256,[0,256]); plt.show()
-
-
-def increase_brightness(img, value=30):
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    h, s, v = cv2.split(hsv)
-
-    lim = 255 - value
-    v[v > lim] = 255
-    v[v <= lim] += value
-
-    final_hsv = cv2.merge((h, s, v))
-    img = cv2.cvtColor(final_hsv, cv2.COLOR_HSV2BGR)
-    return img
-    
-
-def contrast(img):
-    #-----Converting image to LAB Color model----------------------------------- 
-    lab= cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
-    #-----Splitting the LAB image to different channels-------------------------
-    l, a, b = cv2.split(lab)
-
-    #-----Applying CLAHE to L-channel-------------------------------------------
-    clahe = cv2.createCLAHE(clipLimit=contrast_clip_limit, tileGridSize=(tileGridSize, tileGridSize))
-    cl = clahe.apply(l)
-
-    #-----Merge the CLAHE enhanced L-channel with the a and b channel-----------
-    limg = cv2.merge((cl,a,b))
-
-    final = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
-    return final
 
 ### Tesseract OCR Local
 def tesseract_local( img_name ):
@@ -250,7 +181,7 @@ def blob_upload_img( container_name_input ):
 if __name__ == '__main__':
 
   try:
-    log_file = open( config.LOG_DIR + "result.txt", "w")
+    log_file = open( config.LOG_DIR + "result.txt" + str( uuid.uuid4()), "w")
 
     ### Upload blobs to Containers
     # blob_name = "20201103-test" + str( uuid.uuid4() )
@@ -264,26 +195,6 @@ if __name__ == '__main__':
     subscription_key = config.COMPUTER_VISION_SUBSCRIPTION_KEY
     endpoint = config.COMPUTER_VISION_ENDPOINT
     ocr_url = endpoint + "vision/v3.0/ocr"
-
-    ### Set the parameters
-    coutour_thLOW = 20
-    countour_thHIGH = 185
-    countour_size = 3
-    filename_addition = '' #檔名後綴
-    contrast_clip_limit = 0.5
-    tileGridSize = 20
-
-    '''
-    ### Preprocess the raw images to metadata
-    for i in range(1,61):
-      print('./img/{}.png'.format(i))
-      src = cv2.imread('./img/{}.*'.format(i))
-      img = cv2.resize(src,None,fx=0.8,fy=0.8, interpolation=cv2.INTER_CUBIC)
-      img = contrast(img)
-      img = shift_filter(img)
-      result = draw_counter(img)
-      cv2.imwrite('./processed/{}{}.png'.format(i,filename_addition), result)
-    '''
 
     ### Analyze
     print( "blob name: " + blob_name )
