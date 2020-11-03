@@ -1,5 +1,8 @@
 /venv/
 config.py
 /img/
+/processed/
 /__pycache__/
 /data/
+/JSON/
+/LOG/

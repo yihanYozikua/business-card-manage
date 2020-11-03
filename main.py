@@ -75,7 +75,7 @@ def shot_cv2():
 
 ############## OCR ##############
 def ocr():
-  image = Image.open('/Users/xiaoyihan/Downloads/IMG_7520.JPG')
+  image = Image.open('/Users/xiaoyihan/Code/business-card-manage/img/bi.png')
   text = pytesseract.image_to_string(image, lang='chi_tra+eng')
   return text
 
