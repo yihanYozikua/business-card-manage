@@ -48,7 +48,7 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
     if iteration == total: 
         print()
 
-### timing,d child thread
+### timing, child thread
 def countdown_time():
   items = list(range(0, 80))
   l = len(items)
